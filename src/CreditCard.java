@@ -1,17 +1,17 @@
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class CreditCard {
     private double limit;
-    private String cardBrand;
+    private final String cardBrand;
     private double debitAmount = 0.0;
-    private final Map<String, Double> statement;
+    private final List<Purchase> statement;
 
     public CreditCard(String cardBrand, double limit) {
         this.cardBrand = cardBrand;
         this.limit = limit;
-        statement = new HashMap<>();
+        statement = new ArrayList<>();
     }
 
     public double getLimit() {
@@ -37,26 +37,43 @@ public class CreditCard {
     }
 
     private void addPurchase(Purchase purchase) {
-        this.statement.put(purchase.getDescription(), purchase.getPrice());
+        this.statement.add(purchase);
     }
 
     public boolean verifyBalance(Purchase purchase) {
         return !(purchase.getPrice() > limit);
     }
 
+    public boolean hasPurchases() {
+        return !statement.isEmpty();
+    }
+
+    /**
+     * This method uses the Collections class with Comparable<Purchases> to sort the statement list using the
+     * rules defined in Purchase class @Override compareTo method.
+     */
+    public void sortStatement() {
+        Collections.sort(this.statement);
+    }
+
     public void getCreditCartStatement() {
-        System.out.println("\nCredit Card Statement:\n");
+        sortStatement();
+        System.out.println("\n** Credit Card Statement **");
         System.out.println("____________________________________");
-        for(Map.Entry<String, Double> item : statement.entrySet()){
-            System.out.println(item.getKey() + ": " + item.getValue());
+        if(hasPurchases()){
+            for(Purchase item : statement){
+                System.out.println((item.getDescription() + ": " + item.getPrice()));
+            }
+        }else{
+            System.out.println("CreditCard Statement is empty");
         }
-        System.out.println("_____________________________________");
-        System.out.println("Bill: " + this.getDebitAmount());
-        System.out.println("Credit Limit available: " + this.getLimit());
+        System.out.println("____________________________________");
+        System.out.println("Bill US$: " + this.getDebitAmount());
+        System.out.println("Credit Limit Available US$: " + this.getLimit());
     }
 
     @Override
     public String toString() {
-        return cardBrand+" "+limit;
+        return "Brand: "+ cardBrand+" - Limit US$: "+limit;
     }
 }

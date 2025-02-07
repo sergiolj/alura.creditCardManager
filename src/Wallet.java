@@ -5,7 +5,7 @@ public class Wallet {
     private final List<CreditCard> creditCardList;
 
     public Wallet() {
-        this.creditCardList = new ArrayList<CreditCard>();
+        this.creditCardList = new ArrayList<>();
     }
     public void addCreditCard(CreditCard c) {
         creditCardList.add(c);
@@ -14,6 +14,7 @@ public class Wallet {
         creditCardList.remove(c);
     }
     public void listAll() {
+        System.out.println(" ");
         if (!creditCardList.isEmpty()) {
             for(int i=0;i<creditCardList.size();i++) {
                 System.out.println("["+i+"]"+ creditCardList.get(i));
@@ -24,7 +25,7 @@ public class Wallet {
 
     }
 
-      public int getSize(){
+    public int getSize(){
         return creditCardList.size();
     }
 

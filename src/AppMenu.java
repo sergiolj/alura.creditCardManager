@@ -3,8 +3,8 @@ import java.util.Scanner;
 
 public class AppMenu {
     private boolean running = true;
-    private Scanner sc;
-    private Wallet wallet;
+    private final Scanner sc;
+    private final Wallet wallet;
 
     public AppMenu(Wallet wallet) {
         this.wallet = wallet;
@@ -25,10 +25,8 @@ public class AppMenu {
             System.out.println("[7] Exit");
             System.out.print("Enter your option: ");
             option = sc.nextInt();
-            /**
-             * If you not use the next line (sc.nextLine()) and read a String after that
-             * you will get an entry error without any warning. This must be used to clean up the buffer.
-             */
+            // * If you not use the next line (sc.nextLine()) and read a String after that
+            // * you will get an entry error without any warning. This must be used to clean up the buffer.
             sc.nextLine();
 
             switch (option) {
@@ -39,7 +37,7 @@ public class AppMenu {
                     showCreditCardList();
                     break;
                 case 3:
-                    alterCreditCardlimit();
+                    alterCreditCardLimit();
                     break;
                 case 4:
                     registerAPurchase();
@@ -55,6 +53,7 @@ public class AppMenu {
                     break;
             }
         }
+     sc.close();
     }
 
     private void listCreditCardStatement() {
@@ -62,15 +61,20 @@ public class AppMenu {
     }
 
     private void removeACreditCard() {
-        String answer="";
-        if(wallet.getSize()==0){
-            System.out.println("You have only one credit card, do you want to remove it? (s)");
-            answer = sc.nextLine();
-            answer = answer.toLowerCase();
-        }if(answer.equals("s")){
-            wallet.removeCreditCard(getCreditCard());
-        }else{
-            System.out.println("Operation cancelled");
+        System.out.println("Which Credit Card would you like to remove?");
+        CreditCard cardToBeRemoved = getCreditCard();
+
+        if (cardToBeRemoved.hasPurchases()) {
+            System.out.println("You cannot remove a Credit Card with purchases");
+        } else {
+            System.out.println("Are you sure that you wan to remove this credit card? (s)");
+            System.out.println(cardToBeRemoved);
+            String answer = sc.nextLine().toLowerCase();
+            if (answer.equals("s")) {
+                wallet.removeCreditCard(cardToBeRemoved);
+            } else {
+                System.out.println("Operation cancelled");
+            }
         }
     }
 
@@ -83,14 +87,13 @@ public class AppMenu {
     }
 
     private Purchase makeAPurchase() {
-        Purchase item = null;
         System.out.print("Item description: ");
         String description = sc.nextLine();
 
         System.out.print("Item price: ");
         double price = sc.nextDouble();
 
-        item = new Purchase(description, price);
+        Purchase item = new Purchase(description, price);
         System.out.println(item);
         return item;
     }
@@ -108,10 +111,8 @@ public class AppMenu {
             wallet.listAll();
             try{
                 int choice = sc.nextInt();
-                /**
-                 * If you not use the next line (sc.nextLine()) and read a String after that
-                 * you will get an entry error without any warning. This must be used to clean up the buffer.
-                 */
+                // * If you not use the next line (sc.nextLine()) and read a String after that
+                // * you will get an entry error without any warning. This must be used to clean up the buffer.
                 sc.nextLine();
                 if(choice >=0 && choice < wallet.getSize()){
                     card = wallet.getCreditCardList().get(choice);
@@ -125,7 +126,7 @@ public class AppMenu {
         return card;
     }
 
-    private void alterCreditCardlimit() {
+    private void alterCreditCardLimit() {
         System.out.println("Select a Credit Card");
         wallet.listAll();
         CreditCard card = null;
@@ -152,16 +153,15 @@ public class AppMenu {
     }
 
     private void createCreditCard() {
-        System.out.println("Enter the card Brand");
-        String brand = sc.next();
+        System.out.print("\nEnter the card Brand: ");
+        String brand = sc.nextLine();
         try{
-            System.out.println("Enter the card Limit");
+            System.out.print("Enter the card Limit: ");
             double limit = sc.nextDouble();
             CreditCard cc = new CreditCard(brand,limit);
             this.wallet.addCreditCard(cc);
         }catch (IllegalArgumentException e){
             System.out.println("Invalid Card Limit");
         }
-
     }
 }
